@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+pydantic
+openai
+python-multipart  
+nltk
+spacy
+textblob
+scikit-learn
+joblib
+PyPDF2

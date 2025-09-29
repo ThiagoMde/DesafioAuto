@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classificador de Emai Inteligente AI </title>
+    <link rel="stylesheet" href="styles.css">
+    <a script src = "script.js" defer  ></a>
+</head>
+<body>
+    <!-- Header com animação de gradiente -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h1>Classificador Emails <span class="ai-badge">AI</span></h1>
+            </div>
+            <div class="header-stats">
+                <div class="stat">
+                    <span class="stat-number" id="processedCount">0</span>
+                    <span class="stat-label">Emails Processados</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" id="accuracyRate">98.5%</span>
+                    <span class="stat-label">Taxa de Precisão</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Seção de Upload -->
+            <section class="upload-section">
+                <div class="upload-card">
+                    <div class="upload-header">
+                        <h2>Classificar Email</h2>
+                        <p>Faça upload de arquivos ou cole o texto do email para análise automática</p>
+                    </div>
+
+                    <!-- Tabs para diferentes métodos de input -->
+                    <div class="input-tabs">
+                        <button class="tab-button active" data-tab="file">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" fill="currentColor"/>
+                            </svg>
+                            Upload de Arquivo
+                        </button>
+                        <button class="tab-button" data-tab="text">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3,3V21H21V3M5,7H19V19H5M7,9V17H9V13H13V17H15V9H13V11H9V9" fill="currentColor"/>
+                            </svg>
+                            Inserir Texto
+                        </button>
+                    </div>
+
+                    <!-- Conteúdo das Tabs -->
+                    <div class="tab-content active" id="file-tab">
+                        <div class="file-upload-zone" id="dropZone">
+                            <div class="upload-icon">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <polyline points="7,10 12,15 17,10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <h3>Arraste arquivos aqui ou clique para selecionar</h3>
+                            <p>Suporta arquivos .txt e .pdf (máximo 10MB)</p>
+                            <input type="file" id="fileInput" accept=".txt,.pdf" multiple hidden>
+                        </div>
+                        
+                        <div class="uploaded-files" id="uploadedFiles"></div>
+                    </div>
+
+                    <div class="tab-content" id="text-tab">
+                        <div class="text-input-container">
+                            <label for="emailText">Conteúdo do Email:</label>
+                            <textarea 
+                                id="emailText" 
+                                placeholder="Cole aqui o conteúdo do email que deseja classificar..."
+                                rows="8"
+                            ></textarea>
+                            <div class="text-stats">
+                                <span id="charCount">0 caracteres</span>
+                                <span id="wordCount">0 palavras</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="process-btn" id="processBtn" disabled>
+                        <span class="btn-text">Classificar Email</span>
+                        <div class="btn-loader">
+                            <div class="spinner"></div>
+                        </div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Seção de Resultados -->
+            <section class="results-section" id="resultsSection">
+                <div class="results-grid">
+                    <!-- Card de Classificação -->
+                    <div class="result-card classification-card">
+                        <div class="card-header">
+                            <h3>Classificação</h3>
+                            <div class="confidence-badge" id="confidenceBadge">95% confiança</div>
+                        </div>
+                        <div class="classification-result" id="classificationResult">
+                            <div class="classification-icon productive" id="classificationIcon">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div class="classification-text">
+                                <h4 id="classificationType">Email Produtivo</h4>
+                                <p id="classificationDescription">Este email contém informações relevantes para o trabalho</p>
+                            </div>
+                        </div>
+                        
+                        <div class="analysis-details">
+                            <h5>Análise Detalhada:</h5>
+                            <div class="analysis-tags" id="analysisTags">
+                                <span class="tag positive">Conteúdo relevante</span>
+                                <span class="tag positive">Tom profissional</span>
+                                <span class="tag neutral">Ação requerida</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card de Resposta Sugerida -->
+                    <div class="result-card response-card">
+                        <div class="card-header">
+                            <h3>Resposta Sugerida</h3>
+                            <div class="response-actions">
+                                <button class="action-btn" id="copyResponseBtn">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="2" fill="none"/>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    </svg>
+                                    Copiar
+                                </button>
+                                <button class="action-btn" id="editResponseBtn">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    Editar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="response-content" id="responseContent">
+                            <div class="response-text" id="suggestedResponse">
+                                A resposta sugerida aparecerá aqui após a classificação do email...
+                            </div>
+                        </div>
+
+                        <div class="response-options">
+                            <div class="tone-selector">
+                                <label>Tom da resposta:</label>
+                                <select id="responseTone">
+                                    <option value="professional">Profissional</option>
+                                    <option value="friendly">Amigável</option>
+                                    <option value="formal">Formal</option>
+                                    <option value="casual">Casual</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Histórico de Processamento -->
+                <div class="history-section">
+                    <div class="history-header">
+                        <h3>Histórico de Processamento</h3>
+                        <button class="clear-history-btn" id="clearHistoryBtn">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <polyline points="3,6 5,6 21,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M8 6v14c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2V6M5 6V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Limpar Histórico
+                        </button>
+                    </div>
+                    <div class="history-list" id="historyList">
+                        <div class="empty-history">
+                            <p>Nenhum email processado ainda.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Modal de Edição de Resposta -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Editar Resposta Sugerida</h3>
+                <button class="modal-close" id="closeModal">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-content">
+                <textarea id="editResponseText" rows="10"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelEdit">Cancelar</button>
+                <button class="btn-primary" id="saveEdit">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
